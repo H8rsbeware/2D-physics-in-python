@@ -37,24 +37,45 @@ class pair:
         self.members[1].update()
 
 class group:
-    def __init__(self, screen, pairs):
+    def __init__(self, screen, points):
         self.screen = screen
+        self.points = points
         self.pairs = []
-        for couple in pairs:
-                p = pair(screen, couple[0], couple[1])
-                self.pairs.append(p)
+        self.center = [0,0]
+        self.updateCenter()
+        self.createPairs()
+
+    def createPairs(self):
+        i = 0
+        while i < len(self.points) -1:
+            p = pair(self.screen, self.points[i], self.points[i+1])
+            self.pairs.append(p)
+            i += 1
+        self.pairs.append(pair(self.screen, self.points[i], self.points[0]))
+
+    def updateCenter(self):
+        xt = 0
+        yt = 0
+        for point in self.points:
+            xt += point.x
+            yt += point.y
+        xt /= len(self.points)
+        yt /= len(self.points)
+        self.center = [xt, yt]
 
     def update(self):
         for pair in self.pairs:
             pair.update()
+        self.updateCenter()
 
 class renderGroup:
-    def __init__(self, points=[], lines=[], pairs=[], groups=[], btns=[]):
+    def __init__(self, points=[], lines=[], pairs=[], groups=[], btns=[], rigidbodies=[]):
         self.points = points
         self.lines = lines
         self.pairs = pairs
         self.groups = groups
         self.btns = btns
+        self.rbs = rigidbodies
 
     def update(self):
         for point in self.points:
@@ -67,6 +88,8 @@ class renderGroup:
             group.update()
         for btn in self.btns:
             btn.update()
+        for rb in self.rbs:
+            rb.update()
 
 class btn:
     def __init__(self, screen, x, y, width, height, outline, solid, toggleOutline, toggleSolid, face=1):

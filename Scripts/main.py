@@ -1,4 +1,5 @@
 import sys, pygame, UI
+import rigidbody as rb
 
 #Initalise pygame window and return the display as a var
 def startup():
@@ -13,6 +14,7 @@ def startup():
 
 
 def main():
+
     mouseDown = False
     mouseDownFor = 0
     play = False
@@ -22,6 +24,15 @@ def main():
     renderGroup = UI.renderGroup()
     playBtn = UI.btn(screen, 25, 25, 50, 50, '../images/play-outline.png',
                      '../images/play-solid.png', '../images/pause-outline.png', '../images/pause-solid.png')
+
+    #Object creation
+    point1 = UI.point(screen, 100, 100)
+    point2 = UI.point(screen, 200, 100)
+    point3 = UI.point(screen, 200, 200)
+    point4 = UI.point(screen, 100, 200)
+    rgb = rb.rigidbody(screen, [point1, point2, point3, point4], 3)
+    renderGroup.rbs.append(rgb)
+    renderGroup.btns.append(playBtn)
 
     while 1:
         mousex,mousey = pygame.mouse.get_pos()
@@ -47,34 +58,20 @@ def main():
                     z = UI.point(screen,mousex,mousey)
                     renderGroup.points.append(z)
                 mouseDownFor = 0
-        
+
         if pygame.mouse.get_pressed(num_buttons=3):
             mouseDownFor += 1
 
-
-
         screen.fill((255,255,255))
 
-        point1 = UI.point(screen,500,750)
-        point2 = UI.point(screen,1000,750)
-        point3 = UI.point(screen,500,250)
-        point4 = UI.point(screen,1000,250)
-
-        group1 = UI.group(screen,[[point1, point2],[point2, point4], [point4, point3], [point3, point1]])
-        renderGroup.groups.append(group1)
-
-
-        renderGroup.btns.append(playBtn)
-
-
-
+        if not play:
+            rgb.acceleration = (0,0)
+        else:
+            rgb.acceleration = (0, -9.81)
 
         renderGroup.update()
-        clock.tick(60)
+        clock.tick(30)
         pygame.display.update()
-
-
-
 
 
 if __name__ == "__main__":
