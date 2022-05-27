@@ -31,9 +31,76 @@ class pair:
         self.line = line(screen, firstPoint, secondPoint)
 
 
-    def updateAll(self):
+    def update(self):
         self.line.update()
         self.members[0].update()
         self.members[1].update()
+
+class group:
+    def __init__(self, screen, pairs):
+        self.screen = screen
+        self.pairs = []
+        for couple in pairs:
+                p = pair(screen, couple[0], couple[1])
+                self.pairs.append(p)
+
+    def update(self):
+        for pair in self.pairs:
+            pair.update()
+
+class renderGroup:
+    def __init__(self, points=[], lines=[], pairs=[], groups=[], btns=[]):
+        self.points = points
+        self.lines = lines
+        self.pairs = pairs
+        self.groups = groups
+        self.btns = btns
+
+    def update(self):
+        for point in self.points:
+            point.update()
+        for line in self.lines:
+            line.update()
+        for pair in self.pairs:
+            pair.update()
+        for group in self.groups:
+            group.update()
+        for btn in self.btns:
+            btn.update()
+
+class btn:
+    def __init__(self, screen, x, y, width, height, outline, solid, toggleOutline, toggleSolid, face=1):
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.outline = pygame.image.load(outline)
+        self.solid = pygame.image.load(solid)
+        self.tOutline = pygame.image.load(toggleOutline)
+        self.tSolid = pygame.image.load(toggleSolid)
+        self.face = face
+        self.hover = False
+
+    def update(self):
+        mx,my = pygame.mouse.get_pos()
+        if (mx < self.x+ self.width/2) & (mx > self.x- self.width/2) & (my < self.y + self.height/2) & (my > self.y- self.height/2):
+            self.hover = True
+            if self.face == 1:
+                self.screen.blit(self.tSolid, self.tSolid.get_rect())
+            if self.face == 0:
+                self.screen.blit(self.solid, self.solid.get_rect())
+
+        else:
+            if self.face == 1:
+                self.screen.blit(self.tOutline, self.tOutline.get_rect())
+            if self.face == 0:
+                self.screen.blit(self.outline, self.outline.get_rect())
+            self.hover = False
+
+
+
+
+
 
 
