@@ -1,7 +1,8 @@
 import sys, pygame, env, UI
 import rigidbody as rb
 
-#Initalise pygame window and return the display as a var
+
+# Initalise pygame window and return the display as a var
 def startup():
     pygame.init()
     global width, height
@@ -17,23 +18,32 @@ def checkColliders(rendergroup):
     j = 0
     if i == 1:
         return
-    while(j < i):
-        tl = rbs[j].tl
-        br = rbs[j].br
-        bl = [tl.x , br.y]
-        tr = [br.x , tl.y]
-        for rb in rbs:
-            rtl = rb.tl
-            rbr = rb.br
-            rbl = [rtl.x , rbr.y]
-            rtr = [rbr.x, rtl.y]
-            if (br.x > rtl.x & br.x < rtr.x) & (br.y > rtl.y & br.y < rbl.y):
-                return[rbs[j], rb]
-            if (bl.x > rtl.x & bl.x < rtr.x) * (bl.y > rtr.y & bl.y < rbr.y):
-                return[rbs[j], rb]
+    # [tl,tr,br,bl]
+    while (j < i):
+        r = rbs[j].boxcollider.points
+        tl = r[0]
+        tr = r[1]
+        br = r[2]
+        bl = r[3]
+
+        w = 0
+        while (w < i):
+            if not w == j:
+                nr = rbs[w].boxcollider.points
+                rtl = nr[0]
+                rtr = nr[1]
+                rbr = nr[2]
+                rbl = nr[3]
+
+                if (rtl.x < br.x < rtr.x) and (rtl.y < br.y < rbl.y):
+                    return [rbs[j], rb]
+                if (rtl.x < bl.x < rtr.x) and (rtr.y < bl.y < rbr.y):
+                    return [rbs[j], rb]
+            w += 1
+        j += 1
+
 
 def main():
-
     mouseDown = False
     mouseDownFor = 0
     play = False
@@ -44,7 +54,7 @@ def main():
     playBtn = UI.btn(screen, 25, 25, 50, 50, '../images/play-outline.png',
                      '../images/play-solid.png', '../images/pause-outline.png', '../images/pause-solid.png')
 
-    #Object creation
+    # Object creation
     point1 = env.point(screen, 80, 130)
     point25 = env.point(screen, 150, 80)
     point2 = env.point(screen, 220, 130)
@@ -52,22 +62,21 @@ def main():
     point4 = env.point(screen, 100, 200)
     rgb = rb.rigidbody(screen, [point1, point25, point2, point3, point4], 3)
     renderGroup.rbs.append(rgb)
-    rgb.showColliders(False, False)
+    rgb.showColliders(True, True)
     renderGroup.btns.append(playBtn)
 
     fl1 = env.point(screen, 0, 970)
     fl2 = env.point(screen, 1500, 970)
     fl3 = env.point(screen, 1500, 1000)
-    fl4 = env.point(screen, 0 , 1000)
+    fl4 = env.point(screen, 0, 1000)
     flb = rb.rigidbody(screen, [fl1, fl2, fl3, fl4], 0)
-    renderGroup.rbs.append(rgb)
-
+    renderGroup.rbs.append(flb)
 
     while 1:
-        mousex,mousey = pygame.mouse.get_pos()
-        for collision in checkColliders(renderGroup):
-            collision[0].mass = 0
-            collision[1].mass = 0
+        mousex, mousey = pygame.mouse.get_pos()
+        c = checkColliders(renderGroup)
+        if c is not None:
+            c[0].mass = 0
 
         for event in pygame.event.get():
 
@@ -94,12 +103,12 @@ def main():
         if pygame.mouse.get_pressed(num_buttons=3):
             mouseDownFor += 1
 
-        screen.fill((255,255,255))
+        screen.fill((255, 255, 255))
 
         if not play:
-            rgb.acceleration = (0,0)
+            rgb.acceleration = (0, 0)
         else:
-            rgb.acceleration = (0,-9.81)
+            rgb.acceleration = (0, -9.81)
 
         renderGroup.update()
         clock.tick(60)

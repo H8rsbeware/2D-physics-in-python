@@ -11,8 +11,6 @@ class rigidbody(env.group):
         self.velocity = 0,0
         self.force = [0, 0]
         self.boxcollider = self.getRectCollider()
-        self.tl = 0
-        self.br = 0
         self.center = self.getCenter()
 
         self.updateForce(acceleration)
@@ -24,9 +22,10 @@ class rigidbody(env.group):
     def update(self):
         self.updateForce(self.acceleration)
 
-        for point in self.points:
-            point.x += self.force[0]
-            point.y -= self.force[1]
+        if self.mass is not 0:
+            for point in self.points:
+                point.x += self.force[0]
+                point.y -= self.force[1]
 
         for pair in self.pairs:
             pair.update()
@@ -74,8 +73,6 @@ class rigidbody(env.group):
         tr = env.point(self.screen, r, u)
         br = env.point(self.screen, r, d)
         bl = env.point(self.screen, l, d)
-        self.tl = tl
-        self.br = br
         rect = env.group(self.screen, [tl,tr,br,bl])
         return rect
 
