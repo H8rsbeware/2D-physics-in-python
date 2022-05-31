@@ -19,8 +19,10 @@ class line:
         self.firstPoint = firstPoint
         self.secondPoint = secondPoint
 
+
     def update(self):
         pygame.draw.line(self.screen, BLACK , (self.firstPoint.x, self.firstPoint.y), (self.secondPoint.x, self.secondPoint.y), 3)
+
 
 
 class pair:

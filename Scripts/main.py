@@ -1,4 +1,4 @@
-import sys, pygame, env, UI
+import sys, pygame, env, UI, maths
 import rigidbody as rb
 
 
@@ -12,35 +12,7 @@ def startup():
     return screen
 
 
-def checkColliders(rendergroup):
-    rbs = rendergroup.rbs
-    i = len(rbs)
-    j = 0
-    if i == 1:
-        return
-    # [tl,tr,br,bl]
-    while (j < i):
-        r = rbs[j].boxcollider.points
-        tl = r[0]
-        tr = r[1]
-        br = r[2]
-        bl = r[3]
 
-        w = 0
-        while (w < i):
-            if not w == j:
-                nr = rbs[w].boxcollider.points
-                rtl = nr[0]
-                rtr = nr[1]
-                rbr = nr[2]
-                rbl = nr[3]
-
-                if (rtl.x < br.x < rtr.x) and (rtl.y < br.y < rbl.y):
-                    return [rbs[j], rb]
-                if (rtl.x < bl.x < rtr.x) and (rtr.y < bl.y < rbr.y):
-                    return [rbs[j], rb]
-            w += 1
-        j += 1
 
 
 def main():
@@ -74,9 +46,9 @@ def main():
 
     while 1:
         mousex, mousey = pygame.mouse.get_pos()
-        c = checkColliders(renderGroup)
+        c = maths.checkColliders(renderGroup)
         if c is not None:
-            c[0].mass = 0
+            print(maths.getColliderAdjustments(screen, c[0], c[1]))
 
         for event in pygame.event.get():
 
@@ -108,7 +80,7 @@ def main():
         if not play:
             rgb.acceleration = (0, 0)
         else:
-            rgb.acceleration = (0, -9.81)
+            rgb.acceleration = (rgb.acceleration[0], -9.81)
 
         renderGroup.update()
         clock.tick(60)
