@@ -1,6 +1,8 @@
 import sys, pygame
 
 class btn:
+    # Screen for update, x and y for position, width and height for size,
+    # toggle image and hover 1, toggle image and hover 2, start face.
     def __init__(self, screen, x, y, width, height, outline, solid, toggleOutline, toggleSolid, face=1):
         self.screen = screen
         self.x = x
@@ -14,7 +16,9 @@ class btn:
         self.face = face
         self.hover = False
 
+    # Update for button
     def update(self):
+        # Collision detection changes hover status to allow for click/no click.
         mx,my = pygame.mouse.get_pos()
         if (mx < self.x+ self.width/2) & (mx > self.x- self.width/2) & (my < self.y + self.height/2) & (my > self.y- self.height/2):
             self.hover = True
